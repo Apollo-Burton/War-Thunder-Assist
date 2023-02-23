@@ -20,6 +20,7 @@ sound_path = "C:\\Users\\User\\Downloads\\mixkit-alarm-tone-996.wav"
 # copy and paste it to "sound_path", add a backslash to the end, and type your file name. 
 # Make sure to double the backslashes: (C:\Users\User\Downloads\file.mp3 -> C:\\Users\\User\\Downloads\\file.mp3)
 # =========================================================================================================================================================================
+
 top_left = (1730, 125)
 bottom_right = (1850, 190)
 center_of_circle = (1785, 125)
