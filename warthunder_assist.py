@@ -25,7 +25,7 @@ timer = 1
 
 # "top_left" and "bottom_right" are the top left and bottom right corners of the box the program will search in x and y coordinates. The "radius_of_circle" and "center_of_circle" 
 # are used to trim the edges of the box to fit the minimap. Changing these too much either make the circle too big or too small, so I don't recommend changing them.
-# These x and y coordinates are set for a 1080p monitor, i'm working on a fix so that it automatically fits to all monitors with different pixel counts (1440p, 2160p, etc)
+# These x and y coordinates are set for a 1080p monitor, i'm working on a fix so that it automatically fits to all monitors with different pixel counts (1440p, 2160p, etc).
 
 # Change "color_in_rgb" to set the rgb value you will be looking for.
 
@@ -34,8 +34,8 @@ timer = 1
 # less accurate the program will be. For example, if "color_in_rgb" is (50, 50, 50), and "color_range" is 50, then any color from (0, 0, 0) to (99, 99, 99) will be detected.
 # I recommend setting "color_range" to 30 or less, as setting it too high will make the program innacurate.
 
-# "timer" controls how long you want the program to run in minutes.
-# To see debug info (location of pixels and what the rgb value of the pixels are), go to line 62 and remove the hashtag
+# "timer" controls how long you want the program to run in minutes. (timer = 5) means that the program will run for 5 minutes.
+# To see debug info (location of pixels and what the rgb value of the pixels are), go to line 62 and remove the hashtag.
 # =========================================================================================================================================================================
 
 import pyautogui as pag
