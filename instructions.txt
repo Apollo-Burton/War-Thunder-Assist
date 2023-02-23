@@ -6,7 +6,7 @@ Instructions for installing and using War Thunder assistant on Windows:
 "pip install pyautogui"
 "pip install playsound"
 
-3) Download "mixkit-alarm-tone-996.wav" to the folder of your choice (any .wav or .mp3 sound file will work)
+3) Download "mixkit-alarm-tone-996.wav" to the folder of your choice, but the "downloads" folder is recommended (any .wav or .mp3 sound file will work)
 
 4) Copy and paste "warthunder_assist.py" into any code editor (notepad will do, just make sure to change the file from a .txt file to a .py file
 by right clicking on the file and clicking "rename"
@@ -15,7 +15,7 @@ by right clicking on the file and clicking "rename"
 
 6) Configure settings in the user configuration section to your preference
 
-7) Run the file by double clicking on a notepad file or by running "python whatever_you_named_the_file.py" in command prompt
+7) Run the file by double clicking on the notepad file or by running "python whatever_you_named_the_file.py" in command prompt
 
 
 If you need any help, contact apolloburton415@gmail.com or by messaging my reddit account
