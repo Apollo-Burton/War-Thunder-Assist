@@ -4,12 +4,12 @@
 # =========================================================================================================================================================================
 # IMPORTANT
 
-sound_path = "C:\\Users\\User\\Downloads\\mixkit-alarm-tone-996.wav"
+sound_path = "C:\\Users\\User\\Desktop\\Programs\\alert.wav"
 
-# "sound_path" is telling the program where the sound file is on your computer. If you installed "mixkit-alarm-tone-996.wav" file from github, "sound_path" should be 
-# "C:\\Users\\User\\Downloads\\mixkit-alarm-tone-996.wav". "User" SHOULD BE YOUR ACCOUNT NAME ON WINDOWS, if not, it won't work. If you want to use your own audio file,
-# make sure you have the path correct. If you don't know how to check the path of a file, open file explorer, navigate to your audio file, then double click the bar at the top
-# with a list of the files you have gonne through. For example, it might look something like this: > This PC > Windows (C:) > Users > User > Downloads
+# "sound_path" is telling the program where the sound file is on your computer. If you installed "alert.wav" file from github, "sound_path" should be 
+# "C:\\Users\\User\\Downloads\\alert.wav". "User" SHOULD BE YOUR ACCOUNT NAME ON WINDOWS, if not, it won't work. If you want to use your own audio file,
+# make sure you have the path correct. If you don't know how to check the path of a file, then open file explorer, navigate to your audio file, then double click the bar 
+# at the top with a list of the files you have gone through. For example, it might look something like this: > This PC > Windows (C:) > Users > User > Downloads
 # copy and paste it to "sound_path", add a backslash to the end, and type your file name. 
 # Make sure to double the backslashes: (C:\Users\User\Downloads\file.mp3 -> C:\\Users\\User\\Downloads\\file.mp3)
 # =========================================================================================================================================================================
@@ -19,9 +19,11 @@ bottom_right = (1850, 190)
 center_of_circle = (1785, 120)
 radius_of_circle = 65
 
-color_in_rgb = (185, 185, 60)
-color_range = 30
+color_in_rgb = (180, 60, 50)
+color_range = 10
 timer = 1
+
+debug = True
 
 # "top_left" and "bottom_right" are the top left and bottom right corners of the box the program will search in x and y coordinates. The "radius_of_circle" and "center_of_circle" 
 # are used to trim the edges of the box to fit the minimap. Changing these too much either make the circle too big or too small, so I don't recommend changing them.
@@ -35,7 +37,7 @@ timer = 1
 # I recommend setting "color_range" to 30 or less, as setting it too high will make the program innacurate.
 
 # "timer" controls how long you want the program to run in minutes. (timer = 5) means that the program will run for 5 minutes.
-# To see debug info (location of pixels and what the rgb value of the pixels are), go to line 64 and remove the hashtag.
+# To see debug info, change "debug" to "True"
 # =========================================================================================================================================================================
 
 import pyautogui as pag
@@ -45,7 +47,7 @@ import time
 import math
 
 time.sleep(1)
-
+matches = []
 def get_colors(color: tuple[int, int, int], rgb_range: int, center: tuple[int, int], radius: int):
 	screen = pag.screenshot()
 	# Allowing modification of the top_left and bottom_right variables
@@ -62,12 +64,19 @@ def get_colors(color: tuple[int, int, int], rgb_range: int, center: tuple[int, i
 			if distance <= radius:
 				# Checking if the pixel is in the color_range
 				rgb = screen.getpixel((x, y))
-				# print(f"Coordinates and rgb found: {[x, y]}, {rgb}\n")
+				matches.append([[x, y], rgb])
 				if rgb[0] >= color[0] - rgb_range and rgb[0] <= color[0] + rgb_range and rgb[1] >= color[1] - rgb_range and rgb[1] <= color[1] + rgb_range and rgb[2] >= color[2] - rgb_range and rgb[2] <= color[2] + rgb_range:
 					playsound(sound_path)
-					# Focus the scanning on the color by changing the bbox
+					# Provide debug information if the user wants it
+					if debug == True:
+						print(f"The current bbox coords are {top_left}, {bottom_right}")
+					# Only scan the area the color was found, both to speed up the program by reducing iterations and improve accuracy
 					top_left = (x - 20, y - 20)
 					bottom_right = (x + 20, y + 20)
+					# provide debug information if the user wants it
+					if debug == True:
+						print(f"RGB value: {rgb} found at {x}, {y}. Moving bbox to {top_left}, {bottom_right}")
+						print(f"The bbox coords are now {top_left}, {bottom_right}\n")
 					return True
 	# Reset bbox if nothing is found
 	top_left = (1735, 125)
@@ -82,9 +91,9 @@ runtime = time.time() + 60 * timer
 while time.time() <= runtime:
 	get_colors(color_in_rgb, color_range, center_of_circle, radius_of_circle)
 	# Detect if user has muted the alert
-	if keyboard.is_pressed("/"):
-		print("Muted for 10 seconds")
-		time.sleep(10)
-		print("Continuing program")
+	# if keyboard.is_pressed("/"):
+	# 	print("Muted for 10 seconds")
+	# 	time.sleep(10)
+	# 	print("Continuing program")
 
 print("Program finished")
