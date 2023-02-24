@@ -88,6 +88,7 @@ def get_colors(color: tuple[int, int, int], rgb_range: int, center: tuple[int, i
 						print(f"RGB value: {rgb} found at {x}, {y}. Moving bbox to {top_left}, {bottom_right}")
 						print(f"The bbox coords are now {top_left}, {bottom_right}\n")
 					return True
+	
 	# Reset bbox if nothing is found
 	top_left = (1735, 125)
 	bottom_right = (1850, 190)
@@ -107,9 +108,3 @@ while time.time() <= runtime:
 		print("Continuing program")
 
 print("Program finished")
-
-
-# TODO
-# optimize program (Whatever the hell that means)
-# make program scale xy coordnates with monitor quality
-# give program a GUI
