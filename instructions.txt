@@ -14,7 +14,8 @@ Instructions for installing and using War Thunder assistant on Windows:
 by right clicking on the file and clicking "rename"
 
 5) In order for the sound alert to work, you will need to follow the instructions in the user configurations section. The only thing you really need to change is the
-   sound path and the "mute" keybind in the IMPORTANT section at the top.
+   sound path and the "mute" keybind in the IMPORTANT section at the top. The mute keybind mutes the program for 10 seconds and unless you change it to something else,
+   the keybind is set to right ctrl + right shift
 
 6) Configure settings in the user configuration section to your preference
 
