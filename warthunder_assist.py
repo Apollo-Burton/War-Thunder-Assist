@@ -18,6 +18,10 @@ mute = "right_ctrl + right_shift"
 # "mute" controls the hotkey that mutes the alert for 10 seconds. It is currently set to right control + right shift, but you can change it to whatever you want. Plain keys 
 # are just reprented by their letter. So if you wanted your keybind to be "m", you would make mute: mute = "m". and if you wanted it to be 5 you would make mute: mute = "5".
 # If you wanted to make mute m and 5 you would make mute: mute = "m + 5"
+
+timer = 1
+
+# "timer" controls how long you want the program to run in minutes. "timer = 5" means that the program will run for 5 minutes.
 # ==============================================================================================================================================================================
 
 top_left = (1735, 125)
@@ -40,10 +44,6 @@ color_range = 10
 # colors similar to "color_in_rgb". this is helpful when the color you are looking for is part of a gradient or if it slightly changes over time. The higher "color_range" 
 # is set, the less accurate the program will be. For example, if "color_in_rgb" is (50, 50, 50), and "color_range" is 50, then any color from (0, 0, 0) to (99, 99, 99) 
 # will be detected. If you do change this, I recommend setting "color_range" to 20 or less, as setting it too high will make the program innacurate.
-
-timer = 1
-
-# "timer" controls how long you want the program to run in minutes. "timer = 5" means that the program will run for 5 minutes.
 
 debug = False
 
