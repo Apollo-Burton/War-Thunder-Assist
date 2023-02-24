@@ -27,8 +27,8 @@ radius_of_circle = 65
 
 # "top_left" and "bottom_right" are the top left and bottom right corners of the box the program will search in x and y coordinates. The "radius_of_circle" and 
 # "center_of_circle" are used to trim the edges of the box to fit the minimap. Changing these too much either make the circle too big or too small, so I don't 
-# recommend changing them. These x and y coordinates are set for a 1080p monitor, i'm working on a fix so that it automatically fits to all monitors with 
-# different pixel counts (1440p, 2160p, etc).
+# recommend changing them. These x and y coordinates are set for a 1080p monitor, I wrote some code between line 60 and line 80 that should scale the coordinates with
+# resolution, but I have literally no way of testing it, so just pray that it works.
 
 color_in_rgb = (180, 60, 50)
 
@@ -53,45 +53,68 @@ debug = False
 import pyautogui as pag
 from playsound import playsound
 import keyboard
+import tkinter
 import time
 import math
 
+# Scaling coordinates with monitor resolution
+root = tkinter.Tk()
+root.withdraw()
+x, y = root.winfo_screenwidth(), root.winfo_screenheight()
+
+new_top_leftx = top_left[0] / 1080 * y
+new_top_lefty = top_left[1] / 1080 * y
+new_top_left = (int(new_top_leftx), int(new_top_lefty))
+
+new_bottom_rightx = bottom_right[0] / 1080 * y
+new_bottom_righty = bottom_right[1] / 1080 * y
+new_bottom_right = (int(new_bottom_rightx), int(new_bottom_righty))
+
+new_center_of_circlex = center_of_circle[0] / 1080 * y
+new_center_of_circley = center_of_circle[1] / 1080 * y
+new_center_of_circle = (int(new_center_of_circlex), int(new_center_of_circley))
+
+new_radius_of_circle = radius_of_circle / 1080 * y
+
+new_top_left_placeholder = new_top_left
+new_bottom_right_placeholder = new_bottom_right
+
 time.sleep(1)
-matches = []
+
+# get_colors() function; the main function for this program
 def get_colors(color: tuple[int, int, int], rgb_range: int, center: tuple[int, int], radius: int):
 	screen = pag.screenshot()
 	# Allowing modification of the top_left and bottom_right variables
-	global top_left
-	global bottom_right
-	for pixelx in range(bottom_right[0] - top_left[0]):
-		for pixely in range(bottom_right[1] - top_left[1]):
+	global new_top_left
+	global new_bottom_right
+	for pixelx in range(new_bottom_right[0] - new_top_left[0]):
+		for pixely in range(new_bottom_right[1] - new_top_left[1]):
 			# Setting x and y
-			x = top_left[0] + pixelx
-			y = top_left[1] + pixely
+			x = new_top_left[0] + pixelx
+			y = new_top_left[1] + pixely
 			# Calculating distance between pixel and center using the pythagorean thereom
 			distance = math.sqrt((x - center[0])**2 + (y - center[1])**2)
 			# Checking if pixel is within the radius
 			if distance <= radius:
 				# Checking if the pixel is in the color_range
 				rgb = screen.getpixel((x, y))
-				matches.append([[x, y], rgb])
 				if rgb[0] >= color[0] - rgb_range and rgb[0] <= color[0] + rgb_range and rgb[1] >= color[1] - rgb_range and rgb[1] <= color[1] + rgb_range and rgb[2] >= color[2] - rgb_range and rgb[2] <= color[2] + rgb_range:
 					playsound(sound_path)
 					# Provide debug information if the user wants it
 					if debug == True:
-						print(f"The current bbox coords are {top_left}, {bottom_right}")
+						print(f"The current bbox coords are {new_top_left}, {new_bottom_right}")
 					# Only scan the area the color was found, both to speed up the program by reducing iterations and improve accuracy
-					top_left = (x - 20, y - 20)
-					bottom_right = (x + 20, y + 20)
+					new_top_left = (x - 20, y - 20)
+					new_bottom_right = (x + 20, y + 20)
 					# provide debug information if the user wants it
 					if debug == True:
-						print(f"RGB value: {rgb} found at {x}, {y}. Moving bbox to {top_left}, {bottom_right}")
-						print(f"The bbox coords are now {top_left}, {bottom_right}\n")
+						print(f"RGB value: {rgb} found at {x}, {y}. Moving bbox to {new_top_left}, {new_bottom_right}")
+						print(f"The bbox coords are now {new_top_left}, {new_bottom_right}\n")
 					return True
 	
 	# Reset bbox if nothing is found
-	top_left = (1735, 125)
-	bottom_right = (1850, 190)
+	new_top_left = new_top_left_placeholder
+	new_bottom_right = new_bottom_right_placeholder
 	return False
 
 
@@ -100,7 +123,7 @@ print("Program running...")
 
 runtime = time.time() + 60 * timer
 while time.time() <= runtime:
-	get_colors(color_in_rgb, color_range, center_of_circle, radius_of_circle)
+	get_colors(color_in_rgb, color_range, new_center_of_circle, new_radius_of_circle)
 	# Detect if user has muted the alert
 	if keyboard.is_pressed(mute):
 		print("Muted for 10 seconds")
