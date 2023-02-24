@@ -1,7 +1,7 @@
-# =========================================================================================================================================================================
+# ==============================================================================================================================================================================
 # USER CONFIGURATION
 
-# =========================================================================================================================================================================
+# ==============================================================================================================================================================================
 # IMPORTANT
 
 sound_path = "C:\\Users\\User\\Desktop\\Programs\\alert.wav"
@@ -12,33 +12,41 @@ sound_path = "C:\\Users\\User\\Desktop\\Programs\\alert.wav"
 # at the top with a list of the files you have gone through. For example, it might look something like this: > This PC > Windows (C:) > Users > User > Downloads
 # copy and paste it to "sound_path", add a backslash to the end, and type your file name. 
 # Make sure to double the backslashes: (C:\Users\User\Downloads\file.mp3 -> C:\\Users\\User\\Downloads\\file.mp3)
-# =========================================================================================================================================================================
+# ==============================================================================================================================================================================
 
 top_left = (1735, 125)
 bottom_right = (1850, 190)
 center_of_circle = (1785, 120)
 radius_of_circle = 65
 
+# "top_left" and "bottom_right" are the top left and bottom right corners of the box the program will search in x and y coordinates. The "radius_of_circle" and 
+# "center_of_circle" are used to trim the edges of the box to fit the minimap. Changing these too much either make the circle too big or too small, so I don't 
+# recommend changing them. These x and y coordinates are set for a 1080p monitor, i'm working on a fix so that it automatically fits to all monitors with 
+# different pixel counts (1440p, 2160p, etc).
+
 color_in_rgb = (180, 60, 50)
-color_range = 10
-timer = 1
-
-debug = False
-
-# "top_left" and "bottom_right" are the top left and bottom right corners of the box the program will search in x and y coordinates. The "radius_of_circle" and "center_of_circle" 
-# are used to trim the edges of the box to fit the minimap. Changing these too much either make the circle too big or too small, so I don't recommend changing them.
-# These x and y coordinates are set for a 1080p monitor, i'm working on a fix so that it automatically fits to all monitors with different pixel counts (1440p, 2160p, etc).
 
 # Change "color_in_rgb" to set the rgb value you will be looking for.
 
-# Change "color_range" to change the accuracy. If it is set to "0", the program will only look for the exact value of "color_in_rgb". If it is set higher, it will look for colors
-# similar to "color_in_rgb". this is helpful when the color you are looking for is part of a gradient or if it slightly changes over time. The higher "color_range" is set, the
-# less accurate the program will be. For example, if "color_in_rgb" is (50, 50, 50), and "color_range" is 50, then any color from (0, 0, 0) to (99, 99, 99) will be detected.
-# I recommend setting "color_range" to 30 or less, as setting it too high will make the program innacurate.
+color_range = 10
 
-# "timer" controls how long you want the program to run in minutes. (timer = 5) means that the program will run for 5 minutes.
+# Change "color_range" to change the accuracy. If it is set to "0", the program will only look for the exact value of "color_in_rgb". If it is set higher, it will look for 
+# colors similar to "color_in_rgb". this is helpful when the color you are looking for is part of a gradient or if it slightly changes over time. The higher "color_range" 
+# is set, the less accurate the program will be. For example, if "color_in_rgb" is (50, 50, 50), and "color_range" is 50, then any color from (0, 0, 0) to (99, 99, 99) 
+# will be detected. If you do change this, I recommend setting "color_range" to 20 or less, as setting it too high will make the program innacurate.
+
+timer = 1
+
+# "timer" controls how long you want the program to run in minutes. "timer = 5" means that the program will run for 5 minutes.
+
+debug = False
+
 # To see debug info, change "debug" to "True"
-# =========================================================================================================================================================================
+
+mute = "rctrl + rshift"
+
+# "mute" controls the hotkey that mutes the alert for 10 seconds. It is currently set to right control + right shift, but you can change it to whatever you want. Plain keys 
+# ==============================================================================================================================================================================
 
 import pyautogui as pag
 from playsound import playsound
@@ -91,7 +99,7 @@ runtime = time.time() + 60 * timer
 while time.time() <= runtime:
 	get_colors(color_in_rgb, color_range, center_of_circle, radius_of_circle)
 	# Detect if user has muted the alert
-	if keyboard.is_pressed("/"):
+	if keyboard.is_pressed(mute):
 		print("Muted for 10 seconds")
 		time.sleep(10)
 		print("Continuing program")
