@@ -60,21 +60,21 @@ import math
 # Scaling coordinates with monitor resolution
 root = tkinter.Tk()
 root.withdraw()
-x, y = root.winfo_screenwidth(), root.winfo_screenheight()
+xpixels, ypixels = root.winfo_screenwidth(), root.winfo_screenheight()
 
-new_top_leftx = top_left[0] / 1080 * y
-new_top_lefty = top_left[1] / 1080 * y
+new_top_leftx = top_left[0] / 1080 * ypixels
+new_top_lefty = top_left[1] / 1080 * ypixels
 new_top_left = (int(new_top_leftx), int(new_top_lefty))
 
-new_bottom_rightx = bottom_right[0] / 1080 * y
-new_bottom_righty = bottom_right[1] / 1080 * y
+new_bottom_rightx = bottom_right[0] / 1080 * ypixels
+new_bottom_righty = bottom_right[1] / 1080 * ypixels
 new_bottom_right = (int(new_bottom_rightx), int(new_bottom_righty))
 
-new_center_of_circlex = center_of_circle[0] / 1080 * y
-new_center_of_circley = center_of_circle[1] / 1080 * y
+new_center_of_circlex = center_of_circle[0] / 1080 * ypixels
+new_center_of_circley = center_of_circle[1] / 1080 * ypixels
 new_center_of_circle = (int(new_center_of_circlex), int(new_center_of_circley))
 
-new_radius_of_circle = radius_of_circle / 1080 * y
+new_radius_of_circle = int(radius_of_circle / 1080 * ypixels)
 
 new_top_left_placeholder = new_top_left
 new_bottom_right_placeholder = new_bottom_right
@@ -82,7 +82,7 @@ new_bottom_right_placeholder = new_bottom_right
 time.sleep(1)
 
 # get_colors() function; the main function for this program
-def get_colors(color: tuple[int, int, int], rgb_range: int, center: tuple[int, int], radius: int):
+def get_colors(color: tuple[int, int, int], rgb_range: int, center: tuple[int, int], radius: int, debug: bool = False):
 	screen = pag.screenshot()
 	# Allowing modification of the top_left and bottom_right variables
 	global new_top_left
@@ -103,15 +103,14 @@ def get_colors(color: tuple[int, int, int], rgb_range: int, center: tuple[int, i
 					# Provide debug information if the user wants it
 					if debug == True:
 						print(f"The current bbox coords are {new_top_left}, {new_bottom_right}")
-					# Only scan the area the color was found, both to speed up the program by reducing iterations and improve accuracy
-					new_top_left = (x - 20, y - 20)
+					# Only scan the area the color was found, both to speed up the program by reducing iterations and improve accuracy. Also scales with resolution
+					new_top_left = (int(x - 20 * 1080 / ypixels), int(y - 20 * 1080 / ypixels))
 					new_bottom_right = (x + 20, y + 20)
 					# provide debug information if the user wants it
 					if debug == True:
 						print(f"RGB value: {rgb} found at {x}, {y}. Moving bbox to {new_top_left}, {new_bottom_right}")
 						print(f"The bbox coords are now {new_top_left}, {new_bottom_right}\n")
 					return True
-	
 	# Reset bbox if nothing is found
 	new_top_left = new_top_left_placeholder
 	new_bottom_right = new_bottom_right_placeholder
@@ -123,7 +122,7 @@ print("Program running...")
 
 runtime = time.time() + 60 * timer
 while time.time() <= runtime:
-	get_colors(color_in_rgb, color_range, new_center_of_circle, new_radius_of_circle)
+	get_colors(color_in_rgb, color_range, new_center_of_circle, new_radius_of_circle, debug)
 	# Detect if user has muted the alert
 	if keyboard.is_pressed(mute):
 		print("Muted for 10 seconds")
