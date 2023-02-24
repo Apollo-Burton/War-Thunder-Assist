@@ -104,7 +104,7 @@ def get_colors(color: tuple[int, int, int], rgb_range: int, center: tuple[int, i
 					if debug == True:
 						print(f"The current bbox coords are {new_top_left}, {new_bottom_right}")
 					# Only scan the area the color was found, both to speed up the program by reducing iterations and improve accuracy. Also scales with resolution
-					new_top_left = (int(x - 20 * 1080 / ypixels), int(y - 20 * 1080 / ypixels))
+					new_top_left = (int(x - 20 / 1080 * ypixels), int(y - 20 / 1080 * ypixels))
 					new_bottom_right = (x + 20, y + 20)
 					# provide debug information if the user wants it
 					if debug == True:
