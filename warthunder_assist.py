@@ -91,9 +91,9 @@ runtime = time.time() + 60 * timer
 while time.time() <= runtime:
 	get_colors(color_in_rgb, color_range, center_of_circle, radius_of_circle)
 	# Detect if user has muted the alert
-	# if keyboard.is_pressed("/"):
-	# 	print("Muted for 10 seconds")
-	# 	time.sleep(10)
-	# 	print("Continuing program")
+	if keyboard.is_pressed("/"):
+		print("Muted for 10 seconds")
+		time.sleep(10)
+		print("Continuing program")
 
 print("Program finished")
