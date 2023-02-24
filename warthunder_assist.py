@@ -23,7 +23,7 @@ color_in_rgb = (180, 60, 50)
 color_range = 10
 timer = 1
 
-debug = True
+debug = False
 
 # "top_left" and "bottom_right" are the top left and bottom right corners of the box the program will search in x and y coordinates. The "radius_of_circle" and "center_of_circle" 
 # are used to trim the edges of the box to fit the minimap. Changing these too much either make the circle too big or too small, so I don't recommend changing them.
