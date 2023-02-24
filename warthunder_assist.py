@@ -117,7 +117,7 @@ def get_colors(color: tuple[int, int, int], rgb_range: int, center: tuple[int, i
 	return False
 
 
-# Main program loop
+# Main program loops
 print("Program running...")
 
 runtime = time.time() + 60 * timer
