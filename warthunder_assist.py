@@ -12,6 +12,12 @@ sound_path = "C:\\Users\\User\\Desktop\\Programs\\alert.wav"
 # at the top with a list of the files you have gone through. For example, it might look something like this: > This PC > Windows (C:) > Users > User > Downloads
 # copy and paste it to "sound_path", add a backslash to the end, and type your file name. 
 # Make sure to double the backslashes: (C:\Users\User\Downloads\file.mp3 -> C:\\Users\\User\\Downloads\\file.mp3)
+
+mute = "right_ctrl + right_shift"
+
+# "mute" controls the hotkey that mutes the alert for 10 seconds. It is currently set to right control + right shift, but you can change it to whatever you want. Plain keys 
+# are just reprented by their letter. So if you wanted your keybind to be "m", you would make mute: mute = "m". and if you wanted it to be 5 you would make mute: mute = "5".
+# If you wanted to make mute m and 5 you would make mute: mute = "m + 5"
 # ==============================================================================================================================================================================
 
 top_left = (1735, 125)
@@ -42,10 +48,6 @@ timer = 1
 debug = False
 
 # To see debug info, change "debug" to "True"
-
-mute = "rctrl + rshift"
-
-# "mute" controls the hotkey that mutes the alert for 10 seconds. It is currently set to right control + right shift, but you can change it to whatever you want. Plain keys 
 # ==============================================================================================================================================================================
 
 import pyautogui as pag
@@ -105,3 +107,9 @@ while time.time() <= runtime:
 		print("Continuing program")
 
 print("Program finished")
+
+
+# TODO
+# optimize program (Whatever the hell that means)
+# make program scale xy coordnates with monitor quality
+# give program a GUI
