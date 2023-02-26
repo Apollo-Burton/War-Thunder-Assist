@@ -72,9 +72,6 @@ def get_colors(center: tuple[int, int], radius: int, debug: bool = False):
 	screen = pag.screenshot()
 	matches = [0]
 	continue_range = range(0)
-	# Allowing modification of the new_top_left and new_bottom_right variables
-	global new_top_left
-	global new_bottom_right
 	# Looping through the bbox
 	for pixelx in range(int((new_bottom_right[0] - new_top_left[0]) / 1080 * ypixels)):
 		# Skipping 10 iterations if a match is found, this is to prevent multiple matches on the same enemy
@@ -114,7 +111,7 @@ def get_colors(center: tuple[int, int], radius: int, debug: bool = False):
 			# Provide debug information if the user wants it
 			if debug:
 				print(f"Matches = {matches}")
-				print(f"Enemy found at {matches[1:]}, setting off alarm")
+				print(f"Enemy found at {matches[1:]}, setting off alarm\n")
 			return True
 	return False
 
