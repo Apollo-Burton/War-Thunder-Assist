@@ -34,18 +34,7 @@ radius_of_circle = 65
 # recommend changing them. These x and y coordinates are set for a 1080p monitor, I wrote some code between line 60 and line 80 that should scale the coordinates with
 # resolution, but I have literally no way of testing it, so just pray that it works.
 
-color_in_rgb = (180, 60, 50)
-
-# Change "color_in_rgb" to set the rgb value you will be looking for.
-
-color_range = 10
-
-# Change "color_range" to change the accuracy. If it is set to "0", the program will only look for the exact value of "color_in_rgb". If it is set higher, it will look for 
-# colors similar to "color_in_rgb". this is helpful when the color you are looking for is part of a gradient or if it slightly changes over time. The higher "color_range" 
-# is set, the less accurate the program will be. For example, if "color_in_rgb" is (50, 50, 50), and "color_range" is 50, then any color from (0, 0, 0) to (99, 99, 99) 
-# will be detected. If you do change this, I recommend setting "color_range" to 20 or less, as setting it too high will make the program innacurate.
-
-debug = False
+debug = True
 
 # To see debug info, change "debug" to "True"
 # ==============================================================================================================================================================================
@@ -76,57 +65,73 @@ new_center_of_circle = (int(new_center_of_circlex), int(new_center_of_circley))
 
 new_radius_of_circle = int(radius_of_circle / 1080 * ypixels)
 
-new_top_left_placeholder = new_top_left
-new_bottom_right_placeholder = new_bottom_right
-
 time.sleep(1)
 
 # get_colors() function; the main function for this program
-def get_colors(color: tuple[int, int, int], rgb_range: int, center: tuple[int, int], radius: int, debug: bool = False):
+def get_colors(center: tuple[int, int], radius: int, debug: bool = False):
 	screen = pag.screenshot()
-	# Allowing modification of the top_left and bottom_right variables
+	matches = [0]
+	continue_range = range(0)
+	# Allowing modification of the new_top_left and new_bottom_right variables
 	global new_top_left
 	global new_bottom_right
-	for pixelx in range(new_bottom_right[0] - new_top_left[0]):
-		for pixely in range(new_bottom_right[1] - new_top_left[1]):
+	# Looping through the bbox
+	for pixelx in range(int((new_bottom_right[0] - new_top_left[0]) / 1080 * ypixels)):
+		# Skipping 10 iterations if a match is found, this is to prevent multiple matches on the same enemy
+		if pixelx in continue_range:
+			continue
+		for pixely in range(int((new_bottom_right[1] - new_top_left[1]) / 1080 * ypixels)):
 			# Setting x and y
 			x = new_top_left[0] + pixelx
 			y = new_top_left[1] + pixely
 			# Calculating distance between pixel and center using the pythagorean thereom
 			distance = math.sqrt((x - center[0])**2 + (y - center[1])**2)
-			# Checking if pixel is within the radius
+			# Checking if pixel is within the radius of the minimap
 			if distance <= radius:
 				# Checking if the pixel is in the color_range
 				rgb = screen.getpixel((x, y))
-				if rgb[0] >= color[0] - rgb_range and rgb[0] <= color[0] + rgb_range and rgb[1] >= color[1] - rgb_range and rgb[1] <= color[1] + rgb_range and rgb[2] >= color[2] - rgb_range and rgb[2] <= color[2] + rgb_range:
-					playsound(sound_path)
-					# Provide debug information if the user wants it
-					if debug == True:
-						print(f"The current bbox coords are {new_top_left}, {new_bottom_right}")
-					# Only scan the area the color was found, both to speed up the program by reducing iterations and improve accuracy. Also scales with resolution
-					new_top_left = (int(x - 20 / 1080 * ypixels), int(y - 20 / 1080 * ypixels))
-					new_bottom_right = (x + 20, y + 20)
-					# provide debug information if the user wants it
-					if debug == True:
-						print(f"RGB value: {rgb} found at {x}, {y}. Moving bbox to {new_top_left}, {new_bottom_right}")
-						print(f"The bbox coords are now {new_top_left}, {new_bottom_right}\n")
-					return True
-	# Reset bbox if nothing is found
-	new_top_left = new_top_left_placeholder
-	new_bottom_right = new_bottom_right_placeholder
+				rgb_in_range = rgb[0] >= 170 and rgb[2] <= 60
+				if rgb_in_range:
+					# Checking if the program is picking up ground clutter or not. If the program detects more than 3 enemies in one call, it is most likely detecting ground clutter
+					matches.append((x, y))
+					matches[0] += 1
+					if debug:
+						print(f"Match found: matches = {matches[0]}")
+						print(f"The current iteration is: {pixely}\n")
+					continue_range = range(pixelx + int(10 / 1080 * ypixels))
+					if matches[0] >= 4:
+						return False
+					break
+	# If the program didn't detect any ground clutter, and an enemy was found:
+	if matches[0] >= 1:
+		skip_condition = False
+		# If the program detected only one enemy, don't check if points are spread apart
+		if matches[0] == 1:
+			skip_condition = True
+		# Running checks to see if the points are spread apart. If they are clumped together, it is probably ground clutter
+		if skip_condition or (abs(matches[-1][0] - matches[-2][0]) > 50 and abs(matches[-1][1] - matches[-2][1]) > 50):
+			playsound(sound_path)
+			# Provide debug information if the user wants it
+			if debug:
+				print(f"Matches = {matches}")
+				print(f"Enemy found at {matches[1:]}, setting off alarm")
+			return True
 	return False
 
 
 # Main program loop
-print("Program running...")
+def start_program():
+	print("Program running...")
 
-runtime = time.time() + 60 * timer
-while time.time() <= runtime:
-	get_colors(color_in_rgb, color_range, new_center_of_circle, new_radius_of_circle, debug)
-	# Detect if user has muted the alert
-	if keyboard.is_pressed(mute):
-		print("Muted for 10 seconds")
-		time.sleep(10)
-		print("Continuing program")
+	runtime = time.time() + 60 * timer
+	while time.time() <= runtime:
+		get_colors(new_center_of_circle, new_radius_of_circle, debug)
+		# Detect if user has muted the alert
+		if keyboard.is_pressed(mute):
+			print("Muted for 10 seconds")
+			time.sleep(10)
+			print("Continuing program")
 
-print("Program finished")
+	print("Program finished")
+
+start_program()
