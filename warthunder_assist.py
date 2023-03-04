@@ -34,7 +34,7 @@ radius_of_circle = 65
 # recommend changing them. These x and y coordinates are set for a 1080p monitor, I wrote some code between line 60 and line 80 that should scale the coordinates with
 # resolution, but I have literally no way of testing it, so just pray that it works.
 
-debug = True
+debug = False
 
 # To see debug info, change "debug" to "True"
 # ==============================================================================================================================================================================
@@ -43,8 +43,20 @@ import pyautogui as pag
 from playsound import playsound
 import keyboard
 import tkinter
+import logging
 import time
 import math
+import sys
+
+# Setting up logger
+logger = logging.getLogger(__name__)
+stream_handler = logging.StreamHandler(sys.stdout)
+
+logger.addHandler(stream_handler)
+if debug:
+	logger.setLevel(logging.DEBUG)
+else:
+	logger.setLevel(logging.CRITICAL)
 
 # Scaling coordinates with monitor resolution
 root = tkinter.Tk()
@@ -68,53 +80,49 @@ new_radius_of_circle = int(radius_of_circle / 1080 * ypixels)
 time.sleep(1)
 
 # get_colors() function; the main function for this program
-def get_colors(center: tuple[int, int], radius: int, debug: bool = False):
+def get_colors():
 	screen = pag.screenshot()
 	matches = [0]
-	continue_range = range(0)
+	pixelx = 0
+	pixely = 0
 	# Looping through the bbox
-	for pixelx in range(int((new_bottom_right[0] - new_top_left[0]) / 1080 * ypixels)):
-		# Skipping 10 iterations if a match is found, this is to prevent multiple matches on the same enemy
-		if pixelx in continue_range:
-			continue
-		for pixely in range(int((new_bottom_right[1] - new_top_left[1]) / 1080 * ypixels)):
+	while pixelx < (new_bottom_right[0] - new_top_left[0]) / 1080 * ypixels:
+		pixelx += 1
+		pixely = 0
+		while pixely < (new_bottom_right[1] - new_top_left[1]) / 1080 * ypixels:
+			pixely += 1
 			# Setting x and y
 			x = new_top_left[0] + pixelx
 			y = new_top_left[1] + pixely
 			# Calculating distance between pixel and center using the pythagorean thereom
-			distance = math.sqrt((x - center[0])**2 + (y - center[1])**2)
+			distance = math.sqrt((x - new_center_of_circle[0])**2 + (y - new_center_of_circle[1])**2)
 			# Checking if pixel is within the radius of the minimap
-			if distance <= radius:
+			if distance <= new_radius_of_circle:
 				# Checking if the pixel is in the color_range
 				rgb = screen.getpixel((x, y))
-				rgb_in_range = rgb[0] >= 170 and rgb[2] <= 60
+				rgb_in_range = rgb[0] >= 170 and rgb[2] <= 100
 				if rgb_in_range:
 					# Checking if the program is picking up ground clutter or not. If the program detects more than 3 enemies in one call, it is most likely detecting ground clutter
 					matches.append((x, y))
 					matches[0] += 1
-					if debug:
-						print(f"Match found: matches = {matches[0]}")
-						print(f"The current iteration is: {pixely}\n")
-					continue_range = range(pixelx + int(10 / 1080 * ypixels))
+					# Skip over the enemy found, this is to prevent 2 matches on the same enemy
+					pixelx += 10 / 1080 * ypixels
+					pixely += 10 / 1080 * ypixels
+					# Provide debug info
+					logger.debug(f"Match found: matches = {matches[0]}")
+					logger.debug(f"The current iteration is: {pixely}\n")
 					if matches[0] >= 4:
 						return False
-					break
-	# If the program didn't detect any ground clutter, and an enemy was found:
 	if matches[0] >= 1:
-		skip_condition = False
 		# If the program detected only one enemy, don't check if points are spread apart
-		if matches[0] == 1:
-			skip_condition = True
 		# Running checks to see if the points are spread apart. If they are clumped together, it is probably ground clutter
-		if skip_condition or (abs(matches[-1][0] - matches[-2][0]) > 50 and abs(matches[-1][1] - matches[-2][1]) > 50):
+		if matches[0] == 1 or (abs(matches[-1][0] - matches[-2][0]) > 50 and abs(matches[-1][1] - matches[-2][1]) > 50):
 			playsound(sound_path)
-			# Provide debug information if the user wants it
-			if debug:
-				print(f"Matches = {matches}")
-				print(f"Enemy found at {matches[1:]}, setting off alarm\n")
+			# Provide debug info
+			logger.debug(f"Matches = {matches}")
+			logger.debug(f"Enemy found at {matches[1:]}, setting off alarm\n")
 			return True
 	return False
-
 
 # Main program loop
 def start_program():
@@ -122,10 +130,10 @@ def start_program():
 
 	runtime = time.time() + 60 * timer
 	while time.time() <= runtime:
-		get_colors(new_center_of_circle, new_radius_of_circle, debug)
+		get_colors()
 		# Detect if user has muted the alert
 		if keyboard.is_pressed(mute):
-			print("Muted for 10 seconds")
+			print("Muted the alert for 10 seconds")
 			time.sleep(10)
 			print("Continuing program")
 
